@@ -144,6 +144,7 @@ checkpoints/
 *.txt
 !requirements.txt
 !command.txt
+!.github/workflows/*.json
 
 # IDE settings
 .vscode/

@@ -1,0 +1,32 @@
+[tool.black]
+line-length = 127
+target-version = ['py39', 'py310', 'py311']
+include = '\.pyi?$'
+extend-exclude = '''
+/(
+  # directories
+  \.eggs
+  | \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+  | .ipynb_checkpoints
+)/
+'''
+
+[tool.isort]
+profile = "black"
+line_length = 127
+skip_gitignore = true
+known_first_party = ["src"]
+
+[tool.pylint.messages_control]
+disable = "C0114,C0115,C0116,R0913,R0914,R0915"
+
+[tool.pylint.format]
+max-line-length = 127
