@@ -1,6 +1,50 @@
 # Prompt-to-Song Generation using Large Language Models
 
+[![Python Linting](https://github.com/GizzZmo/prompt-to-song-generation-using-large-language-models/actions/workflows/lint.yml/badge.svg)](https://github.com/GizzZmo/prompt-to-song-generation-using-large-language-models/actions/workflows/lint.yml)
+[![Code Quality](https://github.com/GizzZmo/prompt-to-song-generation-using-large-language-models/actions/workflows/code-quality.yml/badge.svg)](https://github.com/GizzZmo/prompt-to-song-generation-using-large-language-models/actions/workflows/code-quality.yml)
+[![Documentation Check](https://github.com/GizzZmo/prompt-to-song-generation-using-large-language-models/actions/workflows/docs-check.yml/badge.svg)](https://github.com/GizzZmo/prompt-to-song-generation-using-large-language-models/actions/workflows/docs-check.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+
 This project explores the use of large language models (LLMs) to generate complete musical compositions from high-level textual descriptions. The process involves understanding the semantics of the prompt, generating relevant lyrics, identifying the musical genre, and composing melodic and harmonic elements to create the final song. This methodology leverages the capabilities of LLMs for generating songs conditioned on textual prompts through a multi-stage process.
+
+## Table of Contents
+
+- [Prerequisites](#prerequisites)
+- [Installation](#installation)
+- [Methodology](#methodology)
+- [How to Run](#how-to-run)
+- [Project Structure](#project-structure)
+- [Contributing](#contributing)
+- [License](#license)
+
+## Prerequisites
+
+Before running this project, ensure you have the following installed:
+
+- **Python 3.9 or higher**
+- **CUDA-compatible GPU** (recommended for training models)
+- **Git** for cloning the repository
+- **pip** for installing Python packages
+
+## Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/GizzZmo/prompt-to-song-generation-using-large-language-models.git
+   cd prompt-to-song-generation-using-large-language-models
+   ```
+
+2. **Install required dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Verify installation:**
+   ```bash
+   python -c "import torch; print(f'PyTorch version: {torch.__version__}')"
+   python -c "import transformers; print(f'Transformers version: {transformers.__version__}')"
+   ```
 
 ## Methodology
 
@@ -92,3 +136,65 @@ This methodology demonstrates the potential of LLMs in generating complete music
 3. Copy model saved in 'transformer_2_sequence' folder to 'artifacts' in the current path and rename it to 'decoder_tf_2_seq.pth'
 4. Copy model saved in 'rhlf/policy_gradient' folder to 'artifacts' in the current path and rename it to 'decoder_rhlf.pth'
 5. Got to 'input.ipynb' notebook and play accordingly
+
+## Project Structure
+
+```
+prompt-to-song-generation-using-large-language-models/
+├── genre_classifier/          # Genre classification models
+│   ├── src/                   # Source code for genre classifier
+│   ├── trainer.py             # Training script
+│   └── artifacts/             # Model artifacts
+├── chord_generator/           # Chord progression generation
+│   ├── transformer_2_sequence/  # Transformer-to-Sequence approach
+│   └── rhlf/                  # Reinforcement Learning approach
+│       ├── reward_model/      # Reward model training
+│       └── policy_gradient/   # Policy gradient training
+├── pipeline/                  # Complete pipeline integration
+├── dataset_creation/          # Dataset creation scripts
+├── examples/                  # Example outputs
+├── images/                    # Architecture diagrams
+├── generation.ipynb           # Jupyter notebook for generation
+├── requirements.txt           # Python dependencies
+└── README.md                  # This file
+```
+
+## Contributing
+
+Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
+
+### Quick Contribution Guide
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Make your changes
+4. Format your code (`black .` and `isort .`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Citation
+
+If you use this project in your research, please cite:
+
+```bibtex
+@misc{prompt-to-song-llm,
+  title={Prompt-to-Song Generation using Large Language Models},
+  author={Contributors},
+  year={2024},
+  howpublished={\url{https://github.com/GizzZmo/prompt-to-song-generation-using-large-language-models}}
+}
+```
+
+## Acknowledgments
+
+- This project leverages Hugging Face Transformers for LLM implementation
+- Thanks to the open-source community for various tools and libraries used in this project
+
+---
+
+**Note:** This is a research project. The generated music quality depends on the training data and model parameters used.
