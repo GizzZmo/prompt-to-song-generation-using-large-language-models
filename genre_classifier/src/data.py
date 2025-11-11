@@ -6,12 +6,13 @@ import torch
 import transformers
 from sklearn.model_selection import train_test_split
 
-genre_map = {'Metal':0, 'rock':1, 'rap':2, 'pop':3, 'country':4}
+genre_map = {"Metal": 0, "rock": 1, "rap": 2, "pop": 3, "country": 4}
+
 
 def tokenize_and_numericalize_example(example, tokenizer):
     tokens = tokenizer(example["Lyric"], truncation=True, padding=True)
-    label = example['genre']
-    return {"ids": tokens["input_ids"], "label": label, 'attention_mask': tokens["attention_mask"]}
+    label = example["genre"]
+    return {"ids": tokens["input_ids"], "label": label, "attention_mask": tokens["attention_mask"]}
 
 
 def get_collate_fn(pad_index):
@@ -39,13 +40,13 @@ def get_collate_fn(pad_index):
         """
         # Extract 'ids' from each item in the batch and pad them to have the same length.
         batch_ids = [item["ids"] for item in batch]  # Extract token indices for all items in the batch.
-        
+
         batch_attention_masks = [item["attention_mask"] for item in batch]
-        
+
         batch_ids = torch.nn.utils.rnn.pad_sequence(
             batch_ids, padding_value=pad_index, batch_first=True
         )  # Pad sequences to the longest one in the batch.
-        
+
         batch_attention_masks = torch.nn.utils.rnn.pad_sequence(
             batch_attention_masks, padding_value=pad_index, batch_first=True
         )  # Pad sequences to the longest one in the batch.
@@ -62,6 +63,7 @@ def get_collate_fn(pad_index):
 
     # Return the collate function to be used with a DataLoader.
     return collate_fn
+
 
 def get_data_loader(dataset, batch_size, pad_index, shuffle=False):
     """
@@ -86,42 +88,41 @@ def get_data_loader(dataset, batch_size, pad_index, shuffle=False):
     # The DataLoader uses the custom collate function defined above to handle variable-length sequences,
     # and it can shuffle the data every epoch if required.
     data_loader = torch.utils.data.DataLoader(
-        dataset=dataset,          # The dataset from which to load data.
-        batch_size=batch_size,    # The number of samples per batch.
-        collate_fn=collate_fn,    # The function used to merge individual samples into batches.
-        shuffle=shuffle,          # Whether to shuffle the data at the start of each epoch.
+        dataset=dataset,  # The dataset from which to load data.
+        batch_size=batch_size,  # The number of samples per batch.
+        collate_fn=collate_fn,  # The function used to merge individual samples into batches.
+        shuffle=shuffle,  # Whether to shuffle the data at the start of each epoch.
     )
 
     # Return the created DataLoader.
     return data_loader
 
+
 def get_data(tokenizer_name, batch_size):
-    #Get Data
-    df = pd.read_csv('data/cleaned_lyrics.csv')[['Lyric', 'genre']]
-    df['genre'] = df['genre'].replace(genre_map)
-    
-    train_data, test_data, _, _ = train_test_split(df, df['genre'], test_size=0.20, random_state=42, stratify=df['genre'])
-    
+    # Get Data
+    df = pd.read_csv("data/cleaned_lyrics.csv")[["Lyric", "genre"]]
+    df["genre"] = df["genre"].replace(genre_map)
+
+    train_data, test_data, _, _ = train_test_split(df, df["genre"], test_size=0.20, random_state=42, stratify=df["genre"])
+
     train_data = datasets.Dataset.from_pandas(train_data)
     test_data = datasets.Dataset.from_pandas(test_data)
-    
-    
-    #Initiate Tokenizer
+
+    # Initiate Tokenizer
     tokenizer = transformers.AutoTokenizer.from_pretrained(tokenizer_name, model_max_length=512)
-    
-    
+
     # Tokenize the data
     train_data = train_data.map(tokenize_and_numericalize_example, fn_kwargs={"tokenizer": tokenizer})
     test_data = test_data.map(tokenize_and_numericalize_example, fn_kwargs={"tokenizer": tokenizer})
-    
+
     pad_index = tokenizer.pad_token_id
-    
+
     # Convert arrays to torch Tensor
     train_data = train_data.with_format(type="torch", columns=["ids", "label", "attention_mask"])
     test_data = test_data.with_format(type="torch", columns=["ids", "label", "attention_mask"])
-    
+
     # Create Dataloaders
     train_data_loader = get_data_loader(train_data, batch_size, pad_index, shuffle=True)
     test_data_loader = get_data_loader(test_data, batch_size, pad_index)
-    
+
     return train_data_loader, test_data_loader
