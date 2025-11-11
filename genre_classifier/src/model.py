@@ -16,6 +16,7 @@ class Transformer(torch.nn.Module):
         transformer (nn.Module): The transformer model from Hugging Face's library.
         fc (nn.Linear): Linear layer to map from hidden states to output dimension.
     """
+
     def __init__(self, transformer, freeze):
         """
         Initializes the Transformer model.
@@ -28,14 +29,14 @@ class Transformer(torch.nn.Module):
         super().__init__()  # Initialize the parent class, nn.Module.
         self.transformer = transformer  # Store the transformer model.
         hidden_dim = transformer.config.hidden_size  # Extract the hidden layer size from the transformer configuration.
-        
+
         self.fc1 = torch.nn.Linear(hidden_dim, 512)
         self.fc2 = torch.nn.Linear(512, 512)
-        self.fc3 = torch.nn.Linear(512,256)
-        self.fc4 = torch.nn.Linear(256,128)
+        self.fc3 = torch.nn.Linear(512, 256)
+        self.fc4 = torch.nn.Linear(256, 128)
         self.fc5 = torch.nn.Linear(128, 64)
         self.fc6 = torch.nn.Linear(64, 32)
-        self.fc7 = torch.nn.Linear(32,5)# Create a linear layer for classification.
+        self.fc7 = torch.nn.Linear(32, 5)  # Create a linear layer for classification.
         self.softmax = torch.nn.Softmax(dim=1)
 
         # If freezing is requested, disable gradient calculations for all transformer parameters.
@@ -54,7 +55,7 @@ class Transformer(torch.nn.Module):
             Tensor: The prediction scores for each class, shaped [batch size, output dim].
         """
         # Pass the input through the transformer model.
-        output = self.transformer(ids, attention_mask = attention_mask, output_attentions=True)
+        output = self.transformer(ids, attention_mask=attention_mask, output_attentions=True)
         hidden = output.last_hidden_state  # Extract the last hidden states.
         # hidden shape: [batch size, sequence length, hidden dimension]
 
@@ -62,8 +63,8 @@ class Transformer(torch.nn.Module):
         # attention shape: [batch size, number of heads, sequence length, sequence length]
 
         cls_hidden = hidden[:, 0, :]  # Extract the [CLS] token's hidden state (first token).
-        
-        x = torch.nn.functional.relu(self.fc1(cls_hidden)) # Pass the [CLS] hidden state through the linear layer.
+
+        x = torch.nn.functional.relu(self.fc1(cls_hidden))  # Pass the [CLS] hidden state through the linear layer.
         x = torch.nn.functional.relu(self.fc2(x))
         x = torch.nn.functional.relu(self.fc3(x))
         x = torch.nn.functional.relu(self.fc4(x))
@@ -73,6 +74,7 @@ class Transformer(torch.nn.Module):
         # prediction shape: [batch size, output dimension]
 
         return x  # Return the final prediction scores.
+
 
 def load_model(transformer_name, freeze):
     transformer = transformers.AutoModel.from_pretrained(transformer_name)
